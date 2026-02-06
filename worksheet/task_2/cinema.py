@@ -7,8 +7,6 @@ You can run the functions you define in this file by using test.py (python test.
 Please do not add any additional code underneath these functions.
 """
 
-import sqlite3
-
 
 def customer_tickets(conn, customer_id):
     """
@@ -18,7 +16,17 @@ def customer_tickets(conn, customer_id):
     Include only tickets purchased by the given customer_id.
     Order results by film title alphabetically.
     """
-    pass
+    query = """
+            SELECT F.Title, S.Screen, T.Price
+            FROM Films F
+            JOIN Screenings S ON S.Film_ID = F.Film_ID
+            JOIN Tickets T ON T.Screening_ID = S.Screening_ID
+            WHERE T.Customer_ID = ?
+            ORDER BY F.Title ASC
+            """
+
+    result = conn.execute(query, (customer_id,)).fetchall()
+    return result
 
 
 def screening_sales(conn):
@@ -29,7 +37,17 @@ def screening_sales(conn):
     Include all screenings, even if tickets_sold is 0.
     Order results by tickets_sold descending.
     """
-    pass
+    query = """
+            SELECT S.Screening_Id, F.Title, COUNT(T.Ticket_Id) AS tickets_sold
+            FROM Screenings S
+            LEFT JOIN Films F ON S.Film_ID = F.Film_ID
+            LEFT JOIN Tickets T ON T.Screening_Id = S.Screening_Id
+            GROUP BY S.Screening_Id, F.Title
+            ORDER BY tickets_sold DESC
+            """
+
+    result = conn.execute(query).fetchall()
+    return result
 
 
 def top_customers_by_spend(conn, limit):
@@ -42,4 +60,15 @@ def top_customers_by_spend(conn, limit):
     Order by total_spent descending.
     Limit the number of rows returned to `limit`.
     """
-    pass
+    query = """
+            SELECT C.Customer_Name, SUM(T.Price) AS total_spent
+            FROM Customers C
+            LEFT JOIN Tickets T ON T.Customer_ID = C.Customer_ID
+            GROUP BY C.Customer_ID, C.Customer_Name
+            HAVING total_spent > 0
+            ORDER BY total_spent DESC
+            LIMIT ? 
+            """
+
+    result = conn.execute(query, (limit,)).fetchall()
+    return result

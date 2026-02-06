@@ -8,7 +8,6 @@ python test.py
 You should not need to change any of this code, and you can see an example of the outputs in example_output.txt
 """
 
-
 import sqlite3
 import sys
 
@@ -17,11 +16,14 @@ try:
     from cinema import customer_tickets, screening_sales, top_customers_by_spend
 except ImportError as e:
     print("Could not import functions from cinema.py.")
-    print("Make sure cinema.py is in the same folder and contains the required functions.")
+    print(
+        "Make sure cinema.py is in the same folder and contains the required functions."
+    )
     print("Import error:", e)
     sys.exit(1)
 
 DB_PATH = "tickets.db"
+
 
 # This is just a function to print out your results nicely.
 def print_rows(headers, rows, max_rows=50):
@@ -53,6 +55,7 @@ def print_rows(headers, rows, max_rows=50):
     if len(rows) > max_rows:
         print(f"(Showing {max_rows} of {len(rows)} rows.)")
 
+
 # function to validate the inputs
 def get_int(prompt):
     while True:
@@ -61,6 +64,7 @@ def get_int(prompt):
             return int(raw)
         except ValueError:
             print("Please enter a valid whole number.")
+
 
 # This displays and runs the menu
 def menu(conn):
